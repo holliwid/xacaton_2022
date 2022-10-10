@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-namespace Server.Models
+namespace Desktop.Models
 {
     /// <summary>
     /// Модель взаимодействия с БД происшествий
@@ -10,6 +10,9 @@ namespace Server.Models
         /// Коллекция объектов-репортов
         /// </summary>
         public DbSet<Report> Reports { get; set; }
-        public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            options.UseSqlServer("Server=DESKTOP-71PDH2V;Database=Reports;Trusted_Connection=True;");
+        }
     }
 }

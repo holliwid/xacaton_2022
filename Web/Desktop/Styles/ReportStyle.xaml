@@ -1,0 +1,100 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--Краткое описание происшествия-->
+    <Style x:Key="Description" TargetType="TextBlock">
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="MinWidth" Value="150px"/>
+        <Setter Property="Width" Value="150px"/>
+        <Setter Property="MaxWidth" Value="150px"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" SpreadMethod="Pad">
+                    <LinearGradientBrush.RelativeTransform>
+                        <TransformGroup>
+                            <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                            <SkewTransform CenterX="0.5" CenterY="0.5"/>
+                            <RotateTransform Angle="-35" CenterX="0.5" CenterY="0.5"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </LinearGradientBrush.RelativeTransform>
+                    <GradientStop Color="#FFAEFFF9" Offset="1"/>
+                    <GradientStop Color="White"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--Заголовки из краткого описания-->
+    <Style x:Key="Header" TargetType="TextBlock">
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="MinWidth" Value="150px"/>
+        <Setter Property="Width" Value="150px"/>
+        <Setter Property="MaxWidth" Value="150px"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" SpreadMethod="Pad">
+                    <LinearGradientBrush.RelativeTransform>
+                        <TransformGroup>
+                            <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                            <SkewTransform CenterX="0.5" CenterY="0.5"/>
+                            <RotateTransform Angle="-35" CenterX="0.5" CenterY="0.5"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </LinearGradientBrush.RelativeTransform>
+                    <GradientStop Color="#FF00FFED" Offset="1"/>
+                    <GradientStop Color="White"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--Граница текстовых блоков-->
+    <Style x:Key="Border" TargetType="Border">
+        <Setter Property="Margin" Value="5,5,5,5"/>
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <SolidColorBrush Color="#FF0099AD"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="BorderThickness" Value="3"/>
+        <Setter Property="CornerRadius" Value="5"/>
+    </Style>
+    <!--Основной текст-->
+    <Style x:Key="MainText" TargetType="TextBlock">
+        <Setter Property="Padding" Value="5,1,5,1"/>
+        <Setter Property="TextAlignment" Value="Justify"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="MinWidth" Value="550px"/>
+        <Setter Property="Width" Value="550px"/>
+        <Setter Property="MaxWidth" Value="550px"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Margin" Value="5,0,5,5"/>
+    </Style>
+    <!--Фото происшествия-->
+    <Style x:Key="MainImage" TargetType="Image">
+        <Setter Property="MaxWidth" Value="250px"/>
+        <Setter Property="Margin" Value="5,5,5,5"/>
+    </Style>
+    <!--Задник основной части рапорта-->
+    <Style x:Key="Background" TargetType="DockPanel">
+        <Setter Property="Background" Value="White"/>
+    </Style>
+    <!--Задник краткой части рапорта-->
+    <Style x:Key="BackgroundMini" TargetType="DockPanel">
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush>
+
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--Мини-происшествие-->
+    <Style x:Key="MiniImage" TargetType="Image">
+        <Setter Property="MinWidth" Value="50px"/>
+        <Setter Property="Width" Value="50px"/>
+        <Setter Property="MaxWidth" Value="50px"/>
+    </Style>
+</ResourceDictionary>

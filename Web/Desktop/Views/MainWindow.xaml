@@ -1,0 +1,31 @@
+﻿<Window x:Class="Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Desktop"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <ResourceDictionary Source="/Styles/MainStyle.xaml"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50px" MinHeight="50px" MaxHeight="50px"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <!--МЕНЮ-->
+        <StackPanel Style="{StaticResource Header}" Grid.Row="0" Orientation="Horizontal">
+            <Border Style="{StaticResource Border}">
+                <Button Style="{StaticResource Button}" Content="Нейронная сеть" Click="NeuralNetworkSettings"/>
+            </Border>
+            <Border Style="{StaticResource Border}">
+                <Button Style="{StaticResource Button}" Content="Список происшествий" Click="GetReportList"/>
+            </Border>
+        </StackPanel>
+        
+        <!--(список и подробности происшествий/нейронка)-->
+        <Frame Grid.Row="1" NavigationUIVisibility="Hidden" x:Name="MainFrame"/>
+    </Grid>
+</Window>

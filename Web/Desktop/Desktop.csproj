@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.9" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.13.0" />
+    <PackageReference Include="Yolov5Net" Version="1.0.9" />
   </ItemGroup>
 
 </Project>

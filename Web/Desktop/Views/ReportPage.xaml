@@ -1,0 +1,60 @@
+﻿<Page x:Class="Desktop.Views.ReportPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Desktop.Views"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ReportBig" Loaded="Page_Loaded">
+    <Page.Resources>
+        <ResourceDictionary Source="/Styles/ReportStyle.xaml"/>
+    </Page.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="29*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150px" MinWidth="150px" MaxWidth="150px"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <!--Список происшествий-->
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.RowSpan="2">
+            <ListBox VerticalContentAlignment="Center" x:Name="reportList" SelectionChanged="reportList_SelectionChanged">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+        </ScrollViewer>
+
+        <!--Подробности текущего происшествия-->
+        <DockPanel Grid.Column="1" LastChildFill="True" Grid.RowSpan="2">
+
+            <!--Краткие сведения-->
+            <StackPanel DockPanel.Dock="Left">
+
+                <!--Место происшествия-->
+                <Border Style="{StaticResource Border}" DockPanel.Dock="Top">
+                    <TextBlock Style="{StaticResource Header}" Text="Место происшествия"/>
+                </Border>
+                <TextBlock x:Name="ReportPlace" DockPanel.Dock="Top" Style="{StaticResource Description}"/>
+
+                <!--Время-->
+                <Border Style="{StaticResource Border}" DockPanel.Dock="Top">
+                    <TextBlock Style="{StaticResource Header}" Text="Время"/>
+                </Border>
+                <TextBlock x:Name="ReportTime" DockPanel.Dock="Top"  Style="{StaticResource Description}"/>
+            </StackPanel>
+
+            <!--Подробности-->
+            <DockPanel>
+                <Image DockPanel.Dock="Top" x:Name="ReportImage" Style="{StaticResource MainImage}"/>
+                <TextBlock x:Name="ReportText" DockPanel.Dock="Bottom" Style="{StaticResource MainText}"/>
+            </DockPanel>
+        </DockPanel>
+    </Grid>
+</Page>
