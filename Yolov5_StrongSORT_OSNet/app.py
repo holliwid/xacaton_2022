@@ -62,17 +62,17 @@ class QImageViewer(QMainWindow):
 
         # Прогон нейронки и создание трёх подпапок
         print(">>Neural network is running!")
-        currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --classes 0"
+        currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --name human --classes 0"
         print(">>Current command: " + currentCommand)
-        t1 = subprocess.Popen(currentCommand, shell=True)
+        t1 = subprocess.Popen(currentCommand )
         
-        currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --classes 1"
+        currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --name jacket --classes 1"
         print(">>Current command: " + currentCommand)
-        t2 = subprocess.Popen(currentCommand, shell=True)
+        t2 = subprocess.Popen(currentCommand)
 
-        currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --classes 2"
+        currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --name pants --classes 2"
         print(">>Current command: " + currentCommand)
-        t3 = subprocess.Popen(currentCommand, shell=True)
+        t3 = subprocess.Popen(currentCommand)
 
         process.append(t1)
         process.append(t2)

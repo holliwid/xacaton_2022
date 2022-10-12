@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-
+import creat_graphics
 
 from PIL import Image
 
@@ -13,32 +13,39 @@ def GetTXT():
     txtList = []
     mainFolderID = len(next(os.walk('runs/track'))[1])
     mainPath = f"runs/track/example{mainFolderID}"
-    for i in range(len(next(os.walk(f"runs/track/example{mainFolderID}"))[1])):
-        if i == 0:
-            txtList.append(f"runs/track/example{mainFolderID}/exp/tracks/" +
-                           os.listdir(f"runs/track/example{mainFolderID}/exp/tracks")[0])
-        else:
-            txtList.append(f"runs/track/example{mainFolderID}/exp{i + 1}/tracks/" +
-                           os.listdir(f"runs/track/example{mainFolderID}/exp{i + 1}/tracks")[0])
+
+    txtList.append(f"runs/track/example{mainFolderID}/human/tracks/" +
+                   os.listdir(f"runs/track/example{mainFolderID}/human/tracks")[0])
+    txtList.append(f"runs/track/example{mainFolderID}/jacket/tracks/" +
+                   os.listdir(f"runs/track/example{mainFolderID}/jacket/tracks")[0])
+    txtList.append(f"runs/track/example{mainFolderID}/pants/tracks/" +
+                   os.listdir(f"runs/track/example{mainFolderID}/pants/tracks")[0])
     return txtList
+
+
 
 def GetVIDEO(path_human):
     mas = path_human.split('/')
     mas = "/".join(mas[:-2]) + '/'
+
     video_path = mas + os.listdir(mas)[0]
     os.mkdir(mas + '/' + 'Warnings')
+
     mas += 'Warnings'
     return(video_path, mas)
 
 
+
+
+
+
 path1, path2, path3 = GetTXT()
+path_human = path1
+df_human = pd.read_csv( path1, sep = " ")
+df_jacket = pd.read_csv(path2, sep = " ")
+df_pants = pd.read_csv(path3, sep = " ")
 
-path_list = [path1, path2, path3]
-
-df_1 = pd.read_csv(path1, sep = " ")
-df_2 = pd.read_csv(path2, sep = " ")
-df_3 = pd.read_csv(path3, sep = " ")
-
+"""
 df_1.columns = ['frame_id', 'object_id', 'box_left', 'box_top', 'width', 'height', 'class_object', 'prediction', 'trash_1', 'trash_2', 'trash_3']
 df_2.columns = ['frame_id', 'object_id', 'box_left', 'box_top', 'width', 'height', 'class_object', 'prediction', 'trash_1', 'trash_2', 'trash_3']
 df_3.columns = ['frame_id', 'object_id', 'box_left', 'box_top', 'width', 'height', 'class_object', 'prediction', 'trash_1', 'trash_2', 'trash_3']
@@ -48,7 +55,6 @@ path_human = -1
 df_list = [df_1, df_2, df_3]
 for x in range(len(df_list)):
   value = df_list[x].iloc[0].class_object
-  print(value)
   if value == 0:
     df_human = df_list[x].copy()
     path_human = path_list[x]
@@ -56,21 +62,35 @@ for x in range(len(df_list)):
     df_jacket = df_list[x].copy()
   if value == 2:
     df_pants = df_list[x].copy()
-
+"""
 
 
 df_human.columns = ['frame_id', 'object_id', 'box_left', 'box_top', 'width', 'height', 'class_object', 'prediction', 'trash_1', 'trash_2', 'trash_3']
 df_jacket.columns = ['frame_id', 'object_id', 'box_left', 'box_top', 'width', 'height', 'class_object', 'prediction', 'trash_1', 'trash_2', 'trash_3']
 df_pants.columns = ['frame_id', 'object_id', 'box_left', 'box_top', 'width', 'height', 'class_object', 'prediction', 'trash_1', 'trash_2', 'trash_3']
 
-df_human['box_top'] = 1080 - df_human['box_top'] - df_human.height / 2
-df_jacket['box_top'] = 1080 - df_jacket['box_top'] - df_jacket.height / 2
-df_pants['box_top'] = 1080 - df_pants['box_top'] - df_pants.height / 2
+
+video_path, warning_path = GetVIDEO(path_human)
+vidcap = cv2.VideoCapture(video_path)
+vidcap.set(cv2.CAP_PROP_POS_FRAMES, 200)
+res1, frame1 = vidcap.read()
+mas = path_human.split('/')
+mas = "/".join(mas[:-3]) + '/'
+print(mas)
+os.mkdir(mas + '/' + 'Graphics')
+cv2.imwrite(mas + "background.jpg", frame1)
+im = Image.open(mas + "background.jpg")
+(width, height) = im.size
+
+
+df_human['box_top'] = height - df_human['box_top'] - df_human.height / 2
+df_jacket['box_top'] = height - df_jacket['box_top'] - df_jacket.height / 2
+df_pants['box_top'] = height - df_pants['box_top'] - df_pants.height / 2
 df_all = pd.concat([df_human, df_jacket, df_pants], ignore_index=True)
 df_all = df_all.sort_values(by=['frame_id'])
 
 
-df_human_valuable = df_human[df_human.groupby('object_id').object_id.transform('count')>250].copy()
+df_human_valuable = df_human[df_human.groupby('object_id').object_id.transform('count')>150].copy()
 df_jacket_valuable = df_jacket[df_jacket.groupby('object_id').object_id.transform('count')>1].copy()
 df_pants_valuable = df_pants[df_pants.groupby('object_id').object_id.transform('count')>1].copy()
 
@@ -151,6 +171,9 @@ for x in list_by_frame:
 df_human_valuable_track = df_human_valuable.copy()
 
 df_res_frame = []
+df_without_jacket = df_jacket_valuable.copy()
+df_without_pants_jacket = df_without_jacket.copy()
+df_without_pants = df_pants.copy()
 
 if len(df_human_valuable_track) !=  0:
     for human_id, jacket_id in human_jacket:
@@ -159,9 +182,25 @@ if len(df_human_valuable_track) !=  0:
     for human_id, pants_id in human_pants:
         df_human_valuable_track.loc[(df_human_valuable_track.object_id == human_id) & (df_human_valuable_track.prediction > 0.70), 'pants_id'] = pants_id
 
-    df_without_pants_jacket = df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull())]
-    without_pants_jacket = dict(df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull())].object_id.value_counts())
+
+    df_without_pants_jacket = df_human_valuable_track.loc[
+        (df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull())]
+    without_pants_jacket = dict(df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (
+        df_human_valuable_track['pants_id'].isnull())].object_id.value_counts())
     without_pants_jacket = list(without_pants_jacket.keys())
+
+    df_without_pants = df_human_valuable_track.loc[
+        (df_human_valuable_track['jacket_id'].isnull() == False) & (df_human_valuable_track['pants_id'].isnull())]
+    without_pants = dict(df_without_pants.loc[(df_without_pants['jacket_id'].isnull() == False) & (
+        df_without_pants['pants_id'].isnull())].object_id.value_counts())
+    without_pants = list(without_pants.keys())
+
+    df_without_jacket = df_human_valuable_track.loc[
+        (df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull() == False)]
+    without_jacket = dict(df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (
+                df_human_valuable_track['pants_id'].isnull() == False)].object_id.value_counts())
+    without_jacket = list(without_jacket.keys())
+
     for human_id in without_pants_jacket:
         k = df_without_pants_jacket.loc[df_without_pants_jacket.object_id == human_id].iloc[0]
         df_res_frame.append([k.frame_id, k.object_id])
@@ -169,12 +208,19 @@ if len(df_human_valuable_track) !=  0:
 
 
 
-
-
-video_path, warning_path = GetVIDEO(path_human)
-vidcap = cv2.VideoCapture(video_path)
-
 for x in df_res_frame:
     vidcap.set(cv2.CAP_PROP_POS_FRAMES, x[0])
     res, frame = vidcap.read()
     cv2.imwrite(warning_path + "/frame%d.jpg" % x[0], frame)
+
+
+creat_graphics.create_scatter(df_human_valuable_track, mas + "background.jpg", mas + 'Graphics/human', width, height)
+creat_graphics.create_scatter(df_without_jacket, mas + "background.jpg", mas + 'Graphics/without_jacket', width, height)
+creat_graphics.create_scatter(df_without_pants_jacket, mas + "background.jpg", mas + 'Graphics/without_pants_jacket', width, height)
+creat_graphics.create_scatter(df_without_pants, mas + "background.jpg", mas + 'Graphics/without_pants', width, height)
+
+
+creat_graphics.heat_map(df_human_valuable_track, mas + "background.jpg", mas + 'Graphics/heat_human', width, height)
+creat_graphics.heat_map(df_without_jacket, mas + "background.jpg", mas + 'Graphics/heat_without_jacket', width, height)
+creat_graphics.heat_map(df_without_pants_jacket, mas + "background.jpg", mas + 'Graphics/heat_without_pants_jacket', width, height)
+creat_graphics.heat_map(df_without_pants, mas + "background.jpg", mas + 'Graphics/heat_without_pants', width, height)
