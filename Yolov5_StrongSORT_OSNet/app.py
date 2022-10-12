@@ -89,6 +89,7 @@ class QImageViewer(QMainWindow):
         currentCommand_script = "python script.py"
         os.popen(currentCommand_script)
 
+
     #Посмотреть график
     def ShowGraphic(self):
         foldersCount = len(next(os.walk('runs/track'))[1])
