@@ -39,16 +39,19 @@ class QImageViewer(QMainWindow):
         _translate = QtCore.QCoreApplication.translate
 
         self.loadFileButton = QtWidgets.QPushButton(self)
+        self.loadFileButton.resize(150, 40)
         self.loadFileButton.setText(_translate("Form", "Открыть видео"))
         self.loadFileButton.clicked.connect(self.RunCommand)
         self.loadFileButton.move(0,0)
 
-        self.showGraphicButton = QtWidgets.QPushButton(self)
-        self.showGraphicButton.setText(_translate("Form", "Показать график"))
-        self.showGraphicButton.clicked.connect(self.ShowGraphic)
-        self.showGraphicButton.move(0,30)
+        # self.showGraphicButton = QtWidgets.QPushButton(self)
+        # self.loadFileButton.resize(150, 40)
+        # self.showGraphicButton.setText(_translate("Form", "Показать график"))
+        # self.showGraphicButton.clicked.connect(self.ShowGraphic)
+        # self.showGraphicButton.move(0,30)
 
         self.openVideos = QtWidgets.QPushButton(self)
+        self.openVideos.resize(150, 40)
         self.openVideos.setText(_translate("Form", "Открыть таблицу"))
         self.openVideos.clicked.connect(self.OpenVideo)
         self.openVideos.move(100,100)

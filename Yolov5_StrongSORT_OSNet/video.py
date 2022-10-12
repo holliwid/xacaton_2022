@@ -32,6 +32,11 @@ class Form_video(QMainWindow):
     def CreateUI(self):
         _translate = QtCore.QCoreApplication.translate
         self.tb = Tb(self)
+        newItem = QTableWidgetItem('Чжан Сан')
+        self.tb.setItem(0,0,newItem)
+        
+        
+
 
 
 
@@ -112,14 +117,23 @@ class Tb(QTableWidget):
             self.setColumnCount(4)
             self.verticalHeader().hide();
             self.updt() # обновить таблицу
-            # self.setEditTriggers(QTableWidget.NoEditTriggers) # запретить изменять поля
-            # self.cellClicked.connect(self.cellClick)  # установить обработчик щелча мыши в таблице
+            self.setEditTriggers(QTableWidget.NoEditTriggers) # запретить изменять поля
+            self.cellClicked.connect(self.cellClick)  # установить обработчик щелча мыши в таблице
+            
 
     # обновление таблицы
         def updt(self):
             self.clear()
             self.setRowCount(0);
             self.setHorizontalHeaderLabels(['ID', 'path name', 'Графики', 'Проишествия']) # заголовки столцов
+            button = QPushButton()
+            
+            self.setCellWidget(0,0, button)
+            self.setCellWidget(0,1, button)
+            self.setCellWidget(0,2, button)
+            self.setCellWidget(0,3, button)
+            self.setItem(0, 0, QTableWidgetItem('pipi'))
+
             # self.wg.cur.execute("здесь запрос нужен")
             # rows = self.wg.cur.fetchall()
             # print(rows)
@@ -131,23 +145,26 @@ class Tb(QTableWidget):
             #         self.setItem(i, j, QTableWidgetItem(str(t).strip()))
             #         j += 1
             #     i += 1
-            # self.resizeColumnsToContents() 
+            self.resizeColumnsToContents() 
 
     # обработка щелчка мыши по таблице
         def cellClick(self, row, col): # row - номер строки, col - номер столбца
-            self.wg.idp.setText(self.item(row, 0).text())
-            self.wg.type.setCurrentText(self.item(row, 1).text().strip())
-            self.wg.img.setText(self.item(row, 2).text().strip())
-            self.wg.mark.setText(self.item(row, 3).text())
-            self.wg.num.setText(self.item(row, 4).text().strip())
-            self.wg.length.setText(self.item(row, 5).text())
-            self.wg.width.setText(self.item(row, 6).text())
-            self.wg.height.setText(self.item(row, 7).text())
-            self.wg.year_of_release.setText(self.item(row, 8).text())
-            self.wg.load_capacity.setText(self.item(row, 9).text())
-            self.wg.number_of_seats.setText(self.item(row, 10).text())
-            self.wg.ctc.setText(self.item(row, 11).text())
-            self.wg.under_repair.setChecked(bool(self.item(row, 12).text() == 'True'))
+            pass
+
+
+            # self.wg.idp.setText(self.item(row, 0).text())
+            # self.wg.type.setCurrentText(self.item(row, 1).text().strip())
+            # self.wg.img.setText(self.item(row, 2).text().strip())
+            # self.wg.mark.setText(self.item(row, 3).text())
+            # self.wg.num.setText(self.item(row, 4).text().strip())
+            # self.wg.length.setText(self.item(row, 5).text())
+            # self.wg.width.setText(self.item(row, 6).text())
+            # self.wg.height.setText(self.item(row, 7).text())
+            # self.wg.year_of_release.setText(self.item(row, 8).text())
+            # self.wg.load_capacity.setText(self.item(row, 9).text())
+            # self.wg.number_of_seats.setText(self.item(row, 10).text())
+            # self.wg.ctc.setText(self.item(row, 11).text())
+            # self.wg.under_repair.setChecked(bool(self.item(row, 12).text() == 'True'))
 
 
 if __name__ == '__main__':
