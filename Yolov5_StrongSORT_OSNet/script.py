@@ -9,7 +9,6 @@ import numpy as np
 
 from PIL import Image
 
-
 def GetTXT():
     txtList = []
     mainFolderID = len(next(os.walk('runs/track'))[1])
@@ -23,8 +22,19 @@ def GetTXT():
                            os.listdir(f"runs/track/example{mainFolderID}/exp{i + 1}/tracks")[0])
     return txtList
 
+def GetVIDEO(path_human):
+    mas = path_human.split('/')
+    mas = "/".join(mas[:-2]) + '/'
+    video_path = mas + os.listdir(mas)[0]
+    os.mkdir(mas + '/' + 'Warnings')
+    mas += 'Warnings'
+    return(video_path, mas)
+
 
 path1, path2, path3 = GetTXT()
+
+path_list = [path1, path2, path3]
+
 df_1 = pd.read_csv(path1, sep = " ")
 df_2 = pd.read_csv(path2, sep = " ")
 df_3 = pd.read_csv(path3, sep = " ")
@@ -33,15 +43,21 @@ df_1.columns = ['frame_id', 'object_id', 'box_left', 'box_top', 'width', 'height
 df_2.columns = ['frame_id', 'object_id', 'box_left', 'box_top', 'width', 'height', 'class_object', 'prediction', 'trash_1', 'trash_2', 'trash_3']
 df_3.columns = ['frame_id', 'object_id', 'box_left', 'box_top', 'width', 'height', 'class_object', 'prediction', 'trash_1', 'trash_2', 'trash_3']
 
+path_human = -1
 
 df_list = [df_1, df_2, df_3]
-for df in df_list:
-  if df.iloc[0].all() == 0:
-    df_human = df_1.copy()
-  if df.iloc[0].all() == 1:
-    df_jacket = df_1.copy()
-  if df.iloc[0].all() == 2:
-    df_pants = df_1.copy()
+for x in range(len(df_list)):
+  value = df_list[x].iloc[0].class_object
+  print(value)
+  if value == 0:
+    df_human = df_list[x].copy()
+    path_human = path_list[x]
+  if value == 1:
+    df_jacket = df_list[x].copy()
+  if value == 2:
+    df_pants = df_list[x].copy()
+
+
 
 df_human.columns = ['frame_id', 'object_id', 'box_left', 'box_top', 'width', 'height', 'class_object', 'prediction', 'trash_1', 'trash_2', 'trash_3']
 df_jacket.columns = ['frame_id', 'object_id', 'box_left', 'box_top', 'width', 'height', 'class_object', 'prediction', 'trash_1', 'trash_2', 'trash_3']
@@ -131,34 +147,34 @@ for x in list_by_frame:
                 human_pants.append([x[0], x[2]])
 
 
+
 df_human_valuable_track = df_human_valuable.copy()
-for human_id, jacket_id in human_jacket:
-  df_human_valuable_track.loc[(df_human_valuable_track.object_id == human_id) & (df_human_valuable_track.prediction > 0.70),'jacket_id'] = jacket_id
-
-for human_id, pants_id in human_pants:
-  df_human_valuable_track.loc[(df_human_valuable_track.object_id == human_id) & (df_human_valuable_track.prediction > 0.70), 'pants_id'] = pants_id
-
-
-df_without_pants_jacket = df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull())]
-without_pants_jacket = dict(df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull())].object_id.value_counts())
-without_pants_jacket = list(without_pants_jacket.keys())
-
 
 df_res_frame = []
-for human_id in without_pants_jacket:
-  k = df_without_pants_jacket.loc[df_without_pants_jacket.object_id == human_id].iloc[0]
-  df_res_frame.append([k.frame_id, k.object_id])
-df_res_frame
+
+if len(df_human_valuable_track) !=  0:
+    for human_id, jacket_id in human_jacket:
+        df_human_valuable_track.loc[(df_human_valuable_track.object_id == human_id) & (df_human_valuable_track.prediction > 0.70),'jacket_id'] = jacket_id
+
+    for human_id, pants_id in human_pants:
+        df_human_valuable_track.loc[(df_human_valuable_track.object_id == human_id) & (df_human_valuable_track.prediction > 0.70), 'pants_id'] = pants_id
+
+    df_without_pants_jacket = df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull())]
+    without_pants_jacket = dict(df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull())].object_id.value_counts())
+    without_pants_jacket = list(without_pants_jacket.keys())
+    for human_id in without_pants_jacket:
+        k = df_without_pants_jacket.loc[df_without_pants_jacket.object_id == human_id].iloc[0]
+        df_res_frame.append([k.frame_id, k.object_id])
 
 
-vidcap = cv2.VideoCapture("")
-mainFolderID = len(next(os.walk('runs/track'))[1])
-mainPath = f"runs/track/example{mainFolderID}"
-folderName = f"warnings{len(next(os.walk(mainPath))[1]) + 1}"
-os.popen(f"mkdir \\runs\\track\\{folderName}")
-project_path = f"{os.path.dirname(__file__)}\\runs\\track\\{folderName}"
+
+
+
+
+video_path, warning_path = GetVIDEO(path_human)
+vidcap = cv2.VideoCapture(video_path)
 
 for x in df_res_frame:
     vidcap.set(cv2.CAP_PROP_POS_FRAMES, x[0])
     res, frame = vidcap.read()
-    cv2.imwrite("runs/track//frame%d.jpg" % x[0], frame)
+    cv2.imwrite(warning_path + "/frame%d.jpg" % x[0], frame)

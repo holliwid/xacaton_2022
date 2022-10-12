@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QLabel, QSizePolicy, QScrollArea, QMessageBox, QMain
 from PyQt5 import QtWidgets, QtCore
 import os
 import threading
+import subprocess
 
 class QImageViewer(QMainWindow):
     def __init__(self):
@@ -43,30 +44,48 @@ class QImageViewer(QMainWindow):
     #Выбор видоса и запуск нейронки
     def RunCommand(self):
         filename = QFileDialog.getOpenFileName()
-        path = f"data\\video\\{filename[0].split('/')[-1]}"
+        path = f"./data/video/{filename[0].split('/')[-1]}"
         print(">>Selected file name: "+path)
         # Создать папку
         folderName = f"example{len(next(os.walk('runs/track'))[1]) + 1}"
-        os.popen(f"mkdir \\runs\\track\\{folderName}")
-        project_path = f"{os.path.dirname(__file__)}\\runs\\track\\{folderName}"
+        os.popen(f"mkdir ./runs/track/{folderName}")
+
+        import pathlib
+        path_1 = str(pathlib.Path(__file__).parent.resolve())
+
+        project_path = f"{path_1}/runs/track/{folderName}"
+        path = f"{path_1}/data/video/{filename[0].split('/')[-1]}"
+
+
+
+        process = []
 
         # Прогон нейронки и создание трёх подпапок
         print(">>Neural network is running!")
         currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --classes 0"
         print(">>Current command: " + currentCommand)
-        os.popen(currentCommand)
-
+        t1 = subprocess.Popen(currentCommand, shell=True)
+        
         currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --classes 1"
         print(">>Current command: " + currentCommand)
-        os.popen(currentCommand)
+        t2 = subprocess.Popen(currentCommand, shell=True)
 
         currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --classes 2"
         print(">>Current command: " + currentCommand)
-        os.popen(currentCommand)
+        t3 = subprocess.Popen(currentCommand, shell=True)
 
-        if True:
-            currentCommand_script = "python script.py"
-            os.popen(currentCommand_script)
+        process.append(t1)
+        process.append(t2)
+        process.append(t3)
+
+
+        for i in process:
+            if i.wait() != 0:
+                print('\t \t Идет распознование')
+
+
+        currentCommand_script = "python script.py"
+        os.popen(currentCommand_script)
 
     #Посмотреть график
     def ShowGraphic(self):
