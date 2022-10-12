@@ -1,3 +1,5 @@
+from asyncio.windows_events import NULL
+from tkinter import Image
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImage, QPixmap, QPalette, QPainter
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
@@ -32,8 +34,6 @@ class Form_video(QMainWindow):
     def CreateUI(self):
         _translate = QtCore.QCoreApplication.translate
         self.tb = Tb(self)
-        newItem = QTableWidgetItem('Чжан Сан')
-        self.tb.setItem(0,0,newItem)
         
         
 
@@ -109,6 +109,7 @@ class Form_video(QMainWindow):
 
 
 
+
 class Tb(QTableWidget):
         def __init__(self, wg):
             self.wg = wg  # запомнить окно, в котором эта таблица показывается
@@ -120,7 +121,6 @@ class Tb(QTableWidget):
             self.setEditTriggers(QTableWidget.NoEditTriggers) # запретить изменять поля
             self.cellClicked.connect(self.cellClick)  # установить обработчик щелча мыши в таблице
             
-
     # обновление таблицы
         def updt(self):
             self.clear()
@@ -133,6 +133,56 @@ class Tb(QTableWidget):
             self.setCellWidget(0,2, button)
             self.setCellWidget(0,3, button)
             self.setItem(0, 0, QTableWidgetItem('pipi'))
+
+
+
+
+            import sqlite3
+            db = sqlite3.connect("reports.db")
+            cursor = db.cursor()
+
+            framePath = "C:\\Users\\Дмитрий\\Desktop\\ebanniyXakaton\\Test.png"
+
+            someList = cursor.execute("""
+                select R.Object_ID, R.Frame_Path, R.Video_Path, E.Description from Reports R 
+                    left join Events E on R.Event_ID = E.ID
+            """).fetchall()
+
+            print(someList)
+            i = 0
+            for elem in someList:
+                self.setRowCount(self.rowCount() + 1)
+                j = 0
+                for t in elem: # заполняем внутри строки
+                    try:
+                        self.setItem(i, j, QTableWidgetItem(QPixmap.fromImage(t)))
+                    except:
+                        self.setItem(i, j, QTableWidgetItem(str(t).strip()))
+                    j += 1
+                i += 1
+
+
+            """
+            cursor.execute(f"insert into Reports(Frame_Path, Video_Path, Object_ID, Event_ID) values(
+                        "{framePath}",
+                        "C:/Users/SomePath/video.mp4",
+                        3,
+                        3
+                    )
+            ")
+            db.commit()
+
+
+
+                    image = QImage(t)
+                    imageD = QLabel()
+                    imageD.setPixmap(QPixmap.fromImage(image))
+                    #self.setItem(i, j, imageD)
+
+                    #self.setCellWidget(0,0, imageD)
+
+                    self.setItem(0,0,QIcon(t))
+            """
 
             # self.wg.cur.execute("здесь запрос нужен")
             # rows = self.wg.cur.fetchall()

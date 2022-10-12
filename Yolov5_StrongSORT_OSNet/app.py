@@ -1,26 +1,20 @@
 import video
-
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImage, QPixmap, QPalette, QPainter
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
 from PyQt5.QtWidgets import QLabel, QSizePolicy, QScrollArea, QMessageBox, QMainWindow, QAction, \
     qApp, QFileDialog
 from PyQt5 import QtWidgets, QtCore
-
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-
 import os
-import threading
 import subprocess
 
 class QImageViewer(QMainWindow):
     def __init__(self):
         super().__init__()
         
-
         self.w = None
 
         # параметры окна
@@ -32,7 +26,6 @@ class QImageViewer(QMainWindow):
 
         self.CreateUI()
         self.setWindowTitle("Детектор")
-
 
     #Создание кнопок взаимодействия
     def CreateUI(self):
@@ -56,7 +49,6 @@ class QImageViewer(QMainWindow):
         self.openVideos.clicked.connect(self.OpenVideo)
         self.openVideos.move(100,100)
 
-
     #Выбор видоса и запуск нейронки
     def RunCommand(self):
         filename = QFileDialog.getOpenFileName()
@@ -68,13 +60,8 @@ class QImageViewer(QMainWindow):
 
         import pathlib
         path_1 = str(pathlib.Path(__file__).parent.resolve())
-
         project_path = f"{path_1}/runs/track/{folderName}"
         path = f"{path_1}/data/video/{filename[0].split('/')[-1]}"
-
-
-
-        process = []
 
         # Прогон нейронки и создание трёх подпапок
         print(">>Neural network is running!")
@@ -90,19 +77,17 @@ class QImageViewer(QMainWindow):
         print(">>Current command: " + currentCommand)
         t3 = subprocess.Popen(currentCommand, shell=True)
 
+        process = []
         process.append(t1)
         process.append(t2)
         process.append(t3)
-
 
         for i in process:
             if i.wait() != 0:
                 print('\t \t Идет распознование')
 
-
         currentCommand_script = "python script.py"
         os.popen(currentCommand_script)
-
 
     #Посмотреть график
     def ShowGraphic(self):
@@ -123,21 +108,15 @@ class QImageViewer(QMainWindow):
             if not self.fitToWindowAct.isChecked():
                 self.imageLabel.adjustSize()
 
-
-
     @pyqtSlot()
     def OpenVideo(self):
         self.window().close()
         if self.w is None:
             self.w = video.Form_video()
             self.w.show()
-
         else:
             self.w.close()  # Close window.
             self.w = None  # Discard reference.
-
-
-
 
 if __name__ == '__main__':
     import sys
