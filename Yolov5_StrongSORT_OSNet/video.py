@@ -1,6 +1,3 @@
-import video
-
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImage, QPixmap, QPalette, QPainter
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
@@ -16,13 +13,10 @@ import os
 import threading
 import subprocess
 
-class QImageViewer(QMainWindow):
+class Form_video(QMainWindow):
     def __init__(self):
         super().__init__()
         
-
-        self.w = None
-
         # параметры окна
         self.resize(1300, 800)
         qr = self.frameGeometry()
@@ -37,21 +31,8 @@ class QImageViewer(QMainWindow):
     #Создание кнопок взаимодействия
     def CreateUI(self):
         _translate = QtCore.QCoreApplication.translate
+        self.tb = Tb(self)
 
-        self.loadFileButton = QtWidgets.QPushButton(self)
-        self.loadFileButton.setText(_translate("Form", "Открыть видео"))
-        self.loadFileButton.clicked.connect(self.RunCommand)
-        self.loadFileButton.move(0,0)
-
-        self.showGraphicButton = QtWidgets.QPushButton(self)
-        self.showGraphicButton.setText(_translate("Form", "Показать график"))
-        self.showGraphicButton.clicked.connect(self.ShowGraphic)
-        self.showGraphicButton.move(0,30)
-
-        self.openVideos = QtWidgets.QPushButton(self)
-        self.openVideos.setText(_translate("Form", "Открыть таблицу"))
-        self.openVideos.clicked.connect(self.OpenVideo)
-        self.openVideos.move(100,100)
 
 
     #Выбор видоса и запуск нейронки
@@ -100,7 +81,6 @@ class QImageViewer(QMainWindow):
         currentCommand_script = "python script.py"
         os.popen(currentCommand_script)
 
-
     #Посмотреть график
     def ShowGraphic(self):
         foldersCount = len(next(os.walk('runs/track'))[1])
@@ -122,18 +102,52 @@ class QImageViewer(QMainWindow):
 
 
 
-    @pyqtSlot()
-    def OpenVideo(self):
-        self.window().close()
-        if self.w is None:
-            self.w = video.Form_video()
-            self.w.show()
-
-        else:
-            self.w.close()  # Close window.
-            self.w = None  # Discard reference.
 
 
+class Tb(QTableWidget):
+        def __init__(self, wg):
+            self.wg = wg  # запомнить окно, в котором эта таблица показывается
+            super().__init__(wg)
+            self.setGeometry(10, 40, 1100, 500)
+            self.setColumnCount(4)
+            self.verticalHeader().hide();
+            self.updt() # обновить таблицу
+            # self.setEditTriggers(QTableWidget.NoEditTriggers) # запретить изменять поля
+            # self.cellClicked.connect(self.cellClick)  # установить обработчик щелча мыши в таблице
+
+    # обновление таблицы
+        def updt(self):
+            self.clear()
+            self.setRowCount(0);
+            self.setHorizontalHeaderLabels(['ID', 'path name', 'Графики', 'Проишествия']) # заголовки столцов
+            # self.wg.cur.execute("здесь запрос нужен")
+            # rows = self.wg.cur.fetchall()
+            # print(rows)
+            # i = 0
+            # for elem in rows:
+            #     self.setRowCount(self.rowCount() + 1)
+            #     j = 0
+            #     for t in elem: # заполняем внутри строки
+            #         self.setItem(i, j, QTableWidgetItem(str(t).strip()))
+            #         j += 1
+            #     i += 1
+            # self.resizeColumnsToContents() 
+
+    # обработка щелчка мыши по таблице
+        def cellClick(self, row, col): # row - номер строки, col - номер столбца
+            self.wg.idp.setText(self.item(row, 0).text())
+            self.wg.type.setCurrentText(self.item(row, 1).text().strip())
+            self.wg.img.setText(self.item(row, 2).text().strip())
+            self.wg.mark.setText(self.item(row, 3).text())
+            self.wg.num.setText(self.item(row, 4).text().strip())
+            self.wg.length.setText(self.item(row, 5).text())
+            self.wg.width.setText(self.item(row, 6).text())
+            self.wg.height.setText(self.item(row, 7).text())
+            self.wg.year_of_release.setText(self.item(row, 8).text())
+            self.wg.load_capacity.setText(self.item(row, 9).text())
+            self.wg.number_of_seats.setText(self.item(row, 10).text())
+            self.wg.ctc.setText(self.item(row, 11).text())
+            self.wg.under_repair.setChecked(bool(self.item(row, 12).text() == 'True'))
 
 
 if __name__ == '__main__':
