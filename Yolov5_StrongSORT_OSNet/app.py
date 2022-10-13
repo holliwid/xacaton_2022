@@ -19,8 +19,8 @@ class QImageViewer(QMainWindow):
         self.move(qr.topLeft())
         self.setWindowTitle("Детектор")
 
-        self.width = self.frameGeometry().width()
-        self.height = self.frameGeometry().height()
+        self.width = int(self.frameGeometry().width())
+        self.height = int(self.frameGeometry().height())
         print(self.width)
 
         self.CreateUI()
