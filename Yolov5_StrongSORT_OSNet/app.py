@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+import css 
 import video
 import os
 import subprocess
@@ -11,29 +12,39 @@ class QImageViewer(QMainWindow):
     def __init__(self):
         super().__init__()
         self.w = None
-        self.resize(1300, 800)
+        self.resize(1700, 800)
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-        self.CreateUI()
         self.setWindowTitle("Детектор")
+
+        self.width = self.frameGeometry().width()
+        self.height = self.frameGeometry().height()
+        print(self.width)
+
+        self.CreateUI()
 
     #Создание кнопок взаимодействия
     def CreateUI(self):
         _translate = QtCore.QCoreApplication.translate
-
+        
+        button_width = 250
+        button_height = 70
         self.loadFileButton = QtWidgets.QPushButton(self)
-        self.loadFileButton.resize(150, 40)
+        self.loadFileButton.setStyleSheet(css.button)
+        self.loadFileButton.resize(button_width, button_height)
         self.loadFileButton.setText(_translate("Form", "Открыть видео"))
         self.loadFileButton.clicked.connect(self.RunCommand)
-        self.loadFileButton.move(0,0)
+        self.loadFileButton.move(self.width / 2 - button_width / 2,  self.height / 2 - button_height / 2 - 100)
 
         self.openVideos = QtWidgets.QPushButton(self)
-        self.openVideos.resize(150, 40)
+        self.openVideos.setStyleSheet(css.button)
+        self.openVideos.resize(button_width, button_height)
         self.openVideos.setText(_translate("Form", "Открыть таблицу"))
         self.openVideos.clicked.connect(self.OpenVideo)
-        self.openVideos.move(100,100)
+        self.openVideos.move(self.width / 2 - button_width / 2,  self.height / 2 - button_height / 2)
+
 
     #Выбор видоса и запуск нейронки
     def RunCommand(self):
