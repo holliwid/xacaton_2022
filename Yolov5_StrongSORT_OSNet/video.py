@@ -136,7 +136,7 @@ class Tb(QTableWidget):
 
 
             import sqlite3
-            db = sqlite3.connect("../reports.db")
+            db = sqlite3.connect("reports.db")
             cursor = db.cursor()
 
             framePath = "C:\\Users\\Дмитрий\\Desktop\\ebanniyXakaton\\Test.png"
