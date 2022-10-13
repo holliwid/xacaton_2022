@@ -214,9 +214,8 @@ class PILGreyHeatmapper(GreyHeatMapper):
 
 if __name__ == '__main__':
     randpoint = lambda max_x, max_y: (random.randint(0, max_x), random.randint(0, max_y))
-    example_img = Image.open(_asset_file('cat.jpg'))
+    example_img = Image.open(_asset_file('Test.png'))
     example_points = (randpoint(*example_img.size) for _ in range(500))
 
     heatmapper = Heatmapper(colours='default')
-    heatmapper.colours = 'reveal'
     heatmapper.heatmap_on_img(example_points, example_img).save('out.png')
