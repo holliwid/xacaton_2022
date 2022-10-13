@@ -67,15 +67,15 @@ class QImageViewer(QMainWindow):
         print(">>Neural network is running!")
         currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --name human --classes 0"
         print(">>Current command: " + currentCommand)
-        t1 = subprocess.Popen(currentCommand )
+        t1 = subprocess.Popen(currentCommand, shell=True)
         
         currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --name jacket --classes 1"
         print(">>Current command: " + currentCommand)
-        t2 = subprocess.Popen(currentCommand)
+        t2 = subprocess.Popen(currentCommand, shell=True)
 
         currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --name pants --classes 2"
         print(">>Current command: " + currentCommand)
-        t3 = subprocess.Popen(currentCommand)
+        t3 = subprocess.Popen(currentCommand, shell=True)
 
         process = []
         process.append(t1)

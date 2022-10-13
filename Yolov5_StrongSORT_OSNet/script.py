@@ -6,6 +6,8 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import creat_graphics
+from heatmappy import Heatmapper
+
 
 from PIL import Image
 
