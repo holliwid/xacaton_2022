@@ -229,4 +229,4 @@ creat_graphics.heat_map(df_without_pants, mas + "background.jpg", mas + 'Graphic
 
 
 df_human_valuable_list = df_human_valuable[['box_left', 'box_top']].values.tolist()
-creat_graphics.create_beautiful_heatmap(df_human_valuable_list, 'Test.png')
+creat_graphics.create_beautiful_heatmap(df_human_valuable_list, './assets/Test.png')
