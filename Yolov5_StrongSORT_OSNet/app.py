@@ -1,29 +1,21 @@
-import video
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QImage, QPixmap, QPalette, QPainter
-from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
-from PyQt5.QtWidgets import QLabel, QSizePolicy, QScrollArea, QMessageBox, QMainWindow, QAction, \
-    qApp, QFileDialog
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+import video
 import os
 import subprocess
+import sqlite3
+import sys
 
 class QImageViewer(QMainWindow):
     def __init__(self):
         super().__init__()
-        
         self.w = None
-
-        # параметры окна
         self.resize(1300, 800)
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-
         self.CreateUI()
         self.setWindowTitle("Детектор")
 
@@ -37,12 +29,6 @@ class QImageViewer(QMainWindow):
         self.loadFileButton.clicked.connect(self.RunCommand)
         self.loadFileButton.move(0,0)
 
-        # self.showGraphicButton = QtWidgets.QPushButton(self)
-        # self.loadFileButton.resize(150, 40)
-        # self.showGraphicButton.setText(_translate("Form", "Показать график"))
-        # self.showGraphicButton.clicked.connect(self.ShowGraphic)
-        # self.showGraphicButton.move(0,30)
-
         self.openVideos = QtWidgets.QPushButton(self)
         self.openVideos.resize(150, 40)
         self.openVideos.setText(_translate("Form", "Открыть таблицу"))
@@ -51,18 +37,18 @@ class QImageViewer(QMainWindow):
 
     #Выбор видоса и запуск нейронки
     def RunCommand(self):
-        filename = QFileDialog.getOpenFileName()
-        path = f"./data/video/{filename[0].split('/')[-1]}"
+        self.filename = QFileDialog.getOpenFileName()
+        path = f"./data/video/{self.filename[0].split('/')[-1]}"
         print(">>Selected file name: "+path)
+
         # Создать папку
         folderName = f"example{len(next(os.walk('runs/track'))[1]) + 1}"
-
         os.popen(f"mkdir ./runs/track/{folderName}")
 
         import pathlib
         path_1 = str(pathlib.Path(__file__).parent.resolve())
         project_path = f"{path_1}/runs/track/{folderName}"
-        path = f"{path_1}/data/video/{filename[0].split('/')[-1]}"
+        path = f"{path_1}/data/video/{self.filename[0].split('/')[-1]}"
 
         # Прогон нейронки и создание трёх подпапок
         print(">>Neural network is running!")
@@ -78,6 +64,7 @@ class QImageViewer(QMainWindow):
         print(">>Current command: " + currentCommand)
         t3 = subprocess.Popen(currentCommand)
 
+        #~~~Какая-то магия с процессами~~~
         process = []
         process.append(t1)
         process.append(t2)
@@ -85,45 +72,64 @@ class QImageViewer(QMainWindow):
 
         for i in process:
             if i.wait() != 0:
-                print('\t \t Идет распознование')
+                print('\t \t Идет распознавание')
 
         currentCommand_script = "python script.py"
-        os.popen(currentCommand_script)
+        t4 = os.popen(currentCommand_script)
+        process.append(t4)
+        for i in process:
+            if i.wait() != 0:
+                print('\t \t Идет распознавание')
+        self.SendDataToDB
 
-
-
-    #Посмотреть график
-    def ShowGraphic(self):
-        foldersCount = len(next(os.walk('runs/track'))[1])
-        fileName = os.path.dirname(__file__).replace("\\","/") + "/runs/track/exp"+str(foldersCount)+"/tracks/heatmap.png"
-        print(fileName)
-        if fileName:
-            image = QImage(fileName)
-            if image.isNull():
-                QMessageBox.information(self, "Image Viewer", "Cannot load %s." % fileName)
-                return
-            self.imageLabel.setPixmap(QPixmap.fromImage(image))
-            self.scaleFactor = 1.0
-            self.scrollArea.setVisible(True)
-            self.printAct.setEnabled(True)
-            self.fitToWindowAct.setEnabled(True)
-            self.updateActions()
-            if not self.fitToWindowAct.isChecked():
-                self.imageLabel.adjustSize()
+    def SendDataToDB(self):
+        db = sqlite3.connect("reports.db")
+        cursor = db.cursor()
+        lastExampleID = len(next(os.walk('runs/track'))[1])
+        Heat_Human_path = f"runs\\track\\example{lastExampleID}\\Graphics\\heat_human.png"
+        Heat_Without_Jacket_path = f"runs\\track\\example{lastExampleID}\\Graphics\\heat_without_jacket.png"
+        Heat_Without_Pants_Jacket_path = f"runs\\track\\example{lastExampleID}\\Graphics\\heat_without_pants_jacket.png"
+        Heat_Without_Pants_path = f"runs\\track\\example{lastExampleID}\\Graphics\\heat_without_pants.png"
+        Human_path = f"runs\\track\\example{lastExampleID}\\Graphics\\human.png"
+        Without_Jacket_path = f"runs\\track\\example{lastExampleID}\\Graphics\\without_jacket.png"
+        Without_Pants_Jacket_path = f"runs\\track\\example{lastExampleID}\\Graphics\\without_pants_jacket.png"
+        Without_Pants_path = f"runs\\track\\example{lastExampleID}\\Graphics\\without_pants.png"
+        Video_Path = f"data\\video\\{self.filename}"
+        cursor.execute(f"""
+            insert into Reports(
+                Heat_Human_path,
+                Heat_Without_Jacket_path,
+                Heat_Without_Pants_Jacket_path,
+                Heat_Without_Pants_path,
+                Human_path,
+                Without_Jacket_path,
+                Without_Pants_Jacket_path,
+                Without_Pants_path,
+                Video_Path)
+            values(
+                {Heat_Human_path},
+                {Heat_Without_Jacket_path},
+                {Heat_Without_Pants_Jacket_path},
+                {Heat_Without_Pants_path},
+                {Human_path},
+                {Without_Jacket_path},
+                {Without_Pants_Jacket_path},
+                {Without_Pants_path},
+                {Video_Path});
+        """)
+        cursor.commit()
 
     @pyqtSlot()
     def OpenVideo(self):
         self.window().close()
         if self.w is None:
-            self.w = video.Form_video()
+            self.w = video.VideoForm()
             self.w.show()
         else:
             self.w.close()  # Close window.
             self.w = None  # Discard reference.
 
 if __name__ == '__main__':
-    import sys
-    from PyQt5.QtWidgets import QApplication
     app = QApplication(sys.argv)
     imageViewer = QImageViewer()
     imageViewer.show()
