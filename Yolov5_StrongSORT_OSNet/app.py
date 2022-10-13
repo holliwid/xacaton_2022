@@ -56,6 +56,7 @@ class QImageViewer(QMainWindow):
         print(">>Selected file name: "+path)
         # Создать папку
         folderName = f"example{len(next(os.walk('runs/track'))[1]) + 1}"
+
         os.popen(f"mkdir ./runs/track/{folderName}")
 
         import pathlib
@@ -65,9 +66,9 @@ class QImageViewer(QMainWindow):
 
         # Прогон нейронки и создание трёх подпапок
         print(">>Neural network is running!")
-        currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --name human --classes 0"
+        currentCommand = "python track.py --yolo-weights best_human_m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --name human --classes 0"
         print(">>Current command: " + currentCommand)
-        t1 = subprocess.Popen(currentCommand )
+        t1 = subprocess.Popen(currentCommand)
         
         currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --name jacket --classes 1"
         print(">>Current command: " + currentCommand)

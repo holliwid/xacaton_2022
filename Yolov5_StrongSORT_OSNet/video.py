@@ -1,5 +1,3 @@
-from asyncio.windows_events import NULL
-from tkinter import Image
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImage, QPixmap, QPalette, QPainter
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
