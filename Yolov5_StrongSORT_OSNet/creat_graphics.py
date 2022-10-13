@@ -10,6 +10,9 @@ import matplotlib.image as mpimg
 import seaborn as sns
 
 
+from heatmappy import Heatmapper
+from PIL import Image
+
 
 def create_scatter(df, path_to_back_img, save_path, width=1920, height=1080):
   img = im.imread(path_to_back_img)
@@ -30,3 +33,13 @@ def heat_map(df, path_to_back_img, save_path, width=1920, height=1080):
   fig = hmax.get_figure()
   plt.imshow(map_img, zorder=0, extent=[0, width, 0, height])
   fig.savefig(save_path + '.png', bbox_inches='tight')
+
+
+
+def create_beautiful_heatmap(data, background):
+  example_img_path = background
+  example_img = Image.open(example_img_path)
+
+  heatmapper = Heatmapper()
+  heatmap = heatmapper.heatmap_on_img(data, example_img)
+  heatmap.save('heatmap.png')

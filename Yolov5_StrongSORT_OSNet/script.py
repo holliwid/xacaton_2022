@@ -224,3 +224,7 @@ creat_graphics.heat_map(df_human_valuable_track, mas + "background.jpg", mas + '
 creat_graphics.heat_map(df_without_jacket, mas + "background.jpg", mas + 'Graphics/heat_without_jacket', width, height)
 creat_graphics.heat_map(df_without_pants_jacket, mas + "background.jpg", mas + 'Graphics/heat_without_pants_jacket', width, height)
 creat_graphics.heat_map(df_without_pants, mas + "background.jpg", mas + 'Graphics/heat_without_pants', width, height)
+
+
+df_human_valuable_list = df_human_valuable[['box_left', 'box_top']].values.tolist()
+creat_graphics.create_beautiful_heatmap(df_human_valuable_list, 'Test.png')
