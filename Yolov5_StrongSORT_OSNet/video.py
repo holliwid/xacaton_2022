@@ -1,23 +1,46 @@
+from msilib.schema import CreateFolder
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImage, QPixmap, QPalette, QPainter
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
 from PyQt5.QtWidgets import QLabel, QSizePolicy, QScrollArea, QMessageBox, QMainWindow, QAction, \
     qApp, QFileDialog
-from PyQt5 import QtWidgets, QtCore
-
+from PyQt5 import QtCore
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-
 import os
-import threading
 import subprocess
+
+#Окно с графиком
+class Form(QMainWindow):
+    def __init__(self, imagePath):
+        super().__init__()
+        #self.setGeometry(10, 10, 1500, 300)
+        self.path = os.path.dirname(__file__).replace("\\","/") + "/" +imagePath.replace('\\','/')
+        self.imageLabel = QLabel(self)
+        self.imageLabel.resize(1920,1080)
+        #self.imageLabel.move(0,0)
+        self.CreateGraphic()
+    def CreateGraphic(self):
+        image = QImage(self.path)
+        self.imageLabel.setPixmap(QPixmap.fromImage(image))
+
+#Кнопка показывания кнопок из /Graphics/
+class ReportButton(QPushButton):
+    def __init__(self, table, imagePath):
+        super().__init__(table)
+        self.ImagePath = imagePath
+        self.setText(imagePath.split('\\')[-1])
+        self.clicked.connect(self.ShowImage)
+        self.table = table
+    #Вернуть фотку из /Graphics/
+    def ShowImage(self):
+        self.window1 = Form(self.ImagePath)
+        self.window1.show()
 
 class Form_video(QMainWindow):
     def __init__(self):
         super().__init__()
-        
-        # параметры окна
         self.resize(1300, 800)
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
@@ -27,35 +50,25 @@ class Form_video(QMainWindow):
         self.CreateUI()
         self.setWindowTitle("Детектор")
 
-
-    #Создание кнопок взаимодействия
+    #Создание интерфейса взаимодействия
     def CreateUI(self):
         _translate = QtCore.QCoreApplication.translate
         self.tb = Tb(self)
-        
-        
-
-
-
 
     #Выбор видоса и запуск нейронки
     def RunCommand(self):
         filename = QFileDialog.getOpenFileName()
         path = f"./data/video/{filename[0].split('/')[-1]}"
         print(">>Selected file name: "+path)
+
         # Создать папку
         folderName = f"example{len(next(os.walk('runs/track'))[1]) + 1}"
         os.popen(f"mkdir ./runs/track/{folderName}")
 
         import pathlib
         path_1 = str(pathlib.Path(__file__).parent.resolve())
-
         project_path = f"{path_1}/runs/track/{folderName}"
         path = f"{path_1}/data/video/{filename[0].split('/')[-1]}"
-
-
-
-        process = []
 
         # Прогон нейронки и создание трёх подпапок
         print(">>Neural network is running!")
@@ -71,15 +84,14 @@ class Form_video(QMainWindow):
         print(">>Current command: " + currentCommand)
         t3 = subprocess.Popen(currentCommand, shell=True)
 
+        process = []
         process.append(t1)
         process.append(t2)
         process.append(t3)
 
-
         for i in process:
             if i.wait() != 0:
                 print('\t \t Идет распознование')
-
 
         currentCommand_script = "python script.py"
         os.popen(currentCommand_script)
@@ -103,118 +115,71 @@ class Form_video(QMainWindow):
             if not self.fitToWindowAct.isChecked():
                 self.imageLabel.adjustSize()
 
-
-
-
-
-
 class Tb(QTableWidget):
         def __init__(self, wg):
             self.wg = wg  # запомнить окно, в котором эта таблица показывается
             super().__init__(wg)
-            self.setGeometry(10, 40, 1100, 500)
+            self.setGeometry(10, 10, 1500, 300)
             self.setColumnCount(4)
             self.verticalHeader().hide();
             self.updt() # обновить таблицу
             self.setEditTriggers(QTableWidget.NoEditTriggers) # запретить изменять поля
-            self.cellClicked.connect(self.cellClick)  # установить обработчик щелча мыши в таблице
             
-    # обновление таблицы
-        def updt(self):
-            self.clear()
-            self.setRowCount(0);
-            self.setHorizontalHeaderLabels(['ID', 'path name', 'Графики', 'Проишествия']) # заголовки столцов
-            button = QPushButton()
-            
-            self.setCellWidget(0,0, button)
-            self.setCellWidget(0,1, button)
-            self.setCellWidget(0,2, button)
-            self.setCellWidget(0,3, button)
-            self.setItem(0, 0, QTableWidgetItem('pipi'))
-
-
-
-
-            import sqlite3
-            db = sqlite3.connect("reports.db")
-            cursor = db.cursor()
-
-            framePath = "C:\\Users\\Дмитрий\\Desktop\\ebanniyXakaton\\Test.png"
-
-            someList = cursor.execute("""
-                select R.Object_ID, R.Frame_Path, R.Video_Path, E.Description from Reports R 
-                    left join Events E on R.Event_ID = E.ID
+        #Создание таблицы репортов
+        def CreateReportList(self):
+            reportList = self.cursor.execute("""
+                select Reports.Video_Path, Reports.ID from Warnings
+                    left join Reports on Warnings.Report_ID = Reports.ID
             """).fetchall()
-
-            print(someList)
-            i = 0
-            for elem in someList:
+            row = 0
+            for elem in reportList:
                 self.setRowCount(self.rowCount() + 1)
-                j = 0
-                for t in elem: # заполняем внутри строки
-                    try:
-                        self.setItem(i, j, QTableWidgetItem(QPixmap.fromImage(t)))
-                    except:
-                        self.setItem(i, j, QTableWidgetItem(str(t).strip()))
-                    j += 1
-                i += 1
+                column = 0
+                self.setItem(row, column, QTableWidgetItem(str(elem[0]).strip()))
+                column += 1
+                self.CreateGraphicsButton(elem[1])
+                #for t in elem:
+                    #self.setItem(row, column, QTableWidgetItem(str(t).strip()))
+                    #column += 1
+                    #self.CreateGraphicsButton()
 
-
-            """
-            cursor.execute(f"insert into Reports(Frame_Path, Video_Path, Object_ID, Event_ID) values(
-                        "{framePath}",
-                        "C:/Users/SomePath/video.mp4",
-                        3,
-                        3
-                    )
-            ")
-            db.commit()
-
-
-
-                    image = QImage(t)
-                    imageD = QLabel()
-                    imageD.setPixmap(QPixmap.fromImage(image))
-                    #self.setItem(i, j, imageD)
-
-                    #self.setCellWidget(0,0, imageD)
-
-                    self.setItem(0,0,QIcon(t))
-            """
-
-            # self.wg.cur.execute("здесь запрос нужен")
-            # rows = self.wg.cur.fetchall()
-            # print(rows)
-            # i = 0
-            # for elem in rows:
-            #     self.setRowCount(self.rowCount() + 1)
-            #     j = 0
-            #     for t in elem: # заполняем внутри строки
-            #         self.setItem(i, j, QTableWidgetItem(str(t).strip()))
-            #         j += 1
-            #     i += 1
+        #Создание кнопок для отображения графиков
+        def CreateGraphicsButton(self, currentID):
+            imagePathList = self.cursor.execute(f"""
+                select * from Reports
+                    where ID = {currentID}
+                """).fetchall()
+            imageButtons = []
+            j = 0
+            for elem in imagePathList:
+                i = 0
+                j += 1
+                for current in elem:
+                    if type(current) is int:
+                        continue
+                    imageButtons.append(ReportButton(self, str(current).strip()))
+                    imageButtons[i].resize(100, 25)
+                    imageButtons[i].move(120 * (i + 1), 30 * j)
+                    i += 1
             self.resizeColumnsToContents() 
 
-    # обработка щелчка мыши по таблице
-        def cellClick(self, row, col): # row - номер строки, col - номер столбца
-            pass
 
 
-            # self.wg.idp.setText(self.item(row, 0).text())
-            # self.wg.type.setCurrentText(self.item(row, 1).text().strip())
-            # self.wg.img.setText(self.item(row, 2).text().strip())
-            # self.wg.mark.setText(self.item(row, 3).text())
-            # self.wg.num.setText(self.item(row, 4).text().strip())
-            # self.wg.length.setText(self.item(row, 5).text())
-            # self.wg.width.setText(self.item(row, 6).text())
-            # self.wg.height.setText(self.item(row, 7).text())
-            # self.wg.year_of_release.setText(self.item(row, 8).text())
-            # self.wg.load_capacity.setText(self.item(row, 9).text())
-            # self.wg.number_of_seats.setText(self.item(row, 10).text())
-            # self.wg.ctc.setText(self.item(row, 11).text())
-            # self.wg.under_repair.setChecked(bool(self.item(row, 12).text() == 'True'))
+        # обновление таблицы
+        def updt(self):
+            self.clear()
+            self.setRowCount(0)
+            self.setColumnCount(1)
+            self.setHorizontalHeaderLabels([
+                'ReportID'
+                ])
+            self.setCellWidget(0,0, QPushButton())
 
-
+            import sqlite3
+            self.db = sqlite3.connect("reports.db")
+            self.cursor = self.db.cursor()
+            self.CreateReportList()
+            
 if __name__ == '__main__':
     import sys
     from PyQt5.QtWidgets import QApplication
