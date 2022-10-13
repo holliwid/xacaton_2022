@@ -36,14 +36,14 @@ class QImageViewer(QMainWindow):
         self.loadFileButton.resize(button_width, button_height)
         self.loadFileButton.setText(_translate("Form", "Открыть видео"))
         self.loadFileButton.clicked.connect(self.RunCommand)
-        self.loadFileButton.move(self.width / 2 - button_width / 2,  self.height / 2 - button_height / 2 - 100)
+        self.loadFileButton.move(int(self.width / 2 - button_width / 2),  int(self.height / 2 - button_height / 2 - 100))
 
         self.openVideos = QtWidgets.QPushButton(self)
         self.openVideos.setStyleSheet(css.button)
         self.openVideos.resize(button_width, button_height)
         self.openVideos.setText(_translate("Form", "Открыть таблицу"))
         self.openVideos.clicked.connect(self.OpenVideo)
-        self.openVideos.move(self.width / 2 - button_width / 2,  self.height / 2 - button_height / 2)
+        self.openVideos.move(int(self.width / 2 - button_width / 2),  int(self.height / 2 - button_height / 2))
 
 
     #Выбор видоса и запуск нейронки
