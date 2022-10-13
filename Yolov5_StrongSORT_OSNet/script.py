@@ -19,6 +19,7 @@ def GetTXT():
     txtList.append(f"runs/track/example{mainFolderID}/human/tracks/" +
                    os.listdir(f"runs/track/example{mainFolderID}/human/tracks")[0])
     txtList.append(f"runs/track/example{mainFolderID}/jacket/tracks/" +
+
                    os.listdir(f"runs/track/example{mainFolderID}/jacket/tracks")[0])
     txtList.append(f"runs/track/example{mainFolderID}/pants/tracks/" +
                    os.listdir(f"runs/track/example{mainFolderID}/pants/tracks")[0])

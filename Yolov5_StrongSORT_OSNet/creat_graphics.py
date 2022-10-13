@@ -25,7 +25,7 @@ def create_scatter(df, path_to_back_img, save_path, width=1920, height=1080):
 
 
 def heat_map(df, path_to_back_img, save_path, width=1920, height=1080):
-  print(df)
+
   map_img = mpimg.imread(path_to_back_img)
   hmax = sns.kdeplot(x=df['box_left'], y=df['box_top'], alpha=0.5, color='red', shade=True,
                       bw_method=.15)

@@ -52,7 +52,7 @@ class QImageViewer(QMainWindow):
 
         # Прогон нейронки и создание трёх подпапок
         print(">>Neural network is running!")
-        currentCommand = "python track.py --yolo-weights best_human_m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --name human --classes 0"
+        currentCommand = "python track.py --yolo-weights best_DIMA_200m.pt --strong-sort-weights osnet_x0_25_msmt17.pt --img 640 --source " + path + " --save-txt --save-conf --project " + project_path + " --save-vid --name human --classes 0"
         print(">>Current command: " + currentCommand)
         t1 = subprocess.Popen(currentCommand)
         
@@ -75,26 +75,23 @@ class QImageViewer(QMainWindow):
                 print('\t \t Идет распознавание')
 
         currentCommand_script = "python script.py"
-        t4 = os.popen(currentCommand_script)
+        t4 = subprocess.Popen(currentCommand_script)
         process.append(t4)
-        for i in process:
-            if i.wait() != 0:
-                print('\t \t Идет распознавание')
-        self.SendDataToDB
+        self.SendDataToDB()
 
     def SendDataToDB(self):
         db = sqlite3.connect("reports.db")
         cursor = db.cursor()
         lastExampleID = len(next(os.walk('runs/track'))[1])
-        Heat_Human_path = f"runs\\track\\example{lastExampleID}\\Graphics\\heat_human.png"
-        Heat_Without_Jacket_path = f"runs\\track\\example{lastExampleID}\\Graphics\\heat_without_jacket.png"
-        Heat_Without_Pants_Jacket_path = f"runs\\track\\example{lastExampleID}\\Graphics\\heat_without_pants_jacket.png"
-        Heat_Without_Pants_path = f"runs\\track\\example{lastExampleID}\\Graphics\\heat_without_pants.png"
-        Human_path = f"runs\\track\\example{lastExampleID}\\Graphics\\human.png"
-        Without_Jacket_path = f"runs\\track\\example{lastExampleID}\\Graphics\\without_jacket.png"
-        Without_Pants_Jacket_path = f"runs\\track\\example{lastExampleID}\\Graphics\\without_pants_jacket.png"
-        Without_Pants_path = f"runs\\track\\example{lastExampleID}\\Graphics\\without_pants.png"
-        Video_Path = f"data\\video\\{self.filename}"
+        Heat_Human_path = f"runs/track/example{lastExampleID}/Graphics/heat_human.png"
+        Heat_Without_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/heat_without_jacket.png"
+        Heat_Without_Pants_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/heat_without_pants_jacket.png"
+        Heat_Without_Pants_path = f"runs/track/example{lastExampleID}/Graphics/heat_without_pants.png"
+        Human_path = f"runs/track/example{lastExampleID}/Graphics/human.png"
+        Without_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/without_jacket.png"
+        Without_Pants_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/without_pants_jacket.png"
+        Without_Pants_path = f"runs/track/example{lastExampleID}/Graphics/without_pants.png"
+        Video_Path = f"data/video/{self.filename[0].split('/')[-1]}"
         cursor.execute(f"""
             insert into Reports(
                 Heat_Human_path,
@@ -107,17 +104,17 @@ class QImageViewer(QMainWindow):
                 Without_Pants_path,
                 Video_Path)
             values(
-                {Heat_Human_path},
-                {Heat_Without_Jacket_path},
-                {Heat_Without_Pants_Jacket_path},
-                {Heat_Without_Pants_path},
-                {Human_path},
-                {Without_Jacket_path},
-                {Without_Pants_Jacket_path},
-                {Without_Pants_path},
-                {Video_Path});
+                '{Heat_Human_path}',
+                '{Heat_Without_Jacket_path}',
+                '{Heat_Without_Pants_Jacket_path}',
+                '{Heat_Without_Pants_path}',
+                '{Human_path}',
+                '{Without_Jacket_path}',
+                '{Without_Pants_Jacket_path}',
+                '{Without_Pants_path}',
+                '{Video_Path}');
         """)
-        cursor.commit()
+        db.commit()
 
     @pyqtSlot()
     def OpenVideo(self):

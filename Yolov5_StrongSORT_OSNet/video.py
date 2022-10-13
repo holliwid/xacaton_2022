@@ -10,6 +10,7 @@ class GraphicForm(QMainWindow):
     def __init__(self, imagePath):
         super().__init__()
         self.path = os.path.dirname(__file__).replace("\\","/") + "/" +imagePath.replace('\\','/')
+        print(self.path)
         self.imageLabel = QLabel(self)
         self.imageLabel.resize(1920,1080)
         self.CreateGraphic()
@@ -61,35 +62,33 @@ class ReportTable(QTableWidget):
 
         def CreateReportList(self):
             reportList = self.cursor.execute("""
-                select Reports.Video_Path, Reports.ID from Warnings
-                    left join Reports on Warnings.Report_ID = Reports.ID
+                select Reports.Video_Path, Reports.ID from Reports
+                    left join Warnings on Warnings.Report_ID = Reports.ID
             """).fetchall()
             row = 0
             for elem in reportList:
                 self.setRowCount(self.rowCount() + 1)
-                column = 0
-                self.setItem(row, column, QTableWidgetItem(str(elem[0]).strip()))
-                column += 1
-                self.CreateGraphicsButton(elem[1])
+                print(f"\t{elem[0]}\t{elem[1]}")
+                self.setItem(row, 0, QTableWidgetItem(str(elem[0]).strip()))
+                row += 1
+                self.CreateGraphicsButton(elem[1], row)
 
-        def CreateGraphicsButton(self, currentID):
+        def CreateGraphicsButton(self, currentID, currentRow):
             imagePathList = self.cursor.execute(f"""
                 select * from Reports
                     where ID = {currentID}
                 """).fetchall()
             imageButtons = []
-            j = 0
             for elem in imagePathList:
                 i = 0
-                j += 1
                 for current in elem:
                     if type(current) is int:
                         continue
                     imageButtons.append(ReportButton(self.parentWindow, str(current).strip()))
                     imageButtons[i].resize(100, 25)
-                    imageButtons[i].move(110 + 105 * (i + 1), 10 + 30 * j)
+                    imageButtons[i].move(110 + 105 * (i + 1), 10 + 30 * currentRow)
                     i += 1
-            self.resizeColumnsToContents() 
+            self.resizeColumnsToContents()
             
 if __name__ == '__main__':
     app = QApplication(sys.argv)
