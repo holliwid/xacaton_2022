@@ -25,17 +25,19 @@ def create_scatter(df, path_to_back_img, save_path, width=1920, height=1080):
 
 
 def heat_map(df, path_to_back_img, save_path, width=1920, height=1080):
-
-  map_img = mpimg.imread(path_to_back_img)
-  hmax = sns.kdeplot(x=df['box_left'], y=df['box_top'], alpha=0.5, color='red', shade=True,
+  try:
+    map_img = mpimg.imread(path_to_back_img)
+    hmax = sns.kdeplot(x=df['box_left'], y=df['box_top'], alpha=0.5, color='red', shade=True,
                       bw_method=.15)
-  hmax.collections[0].set_alpha(0)
-  fig = hmax.get_figure()
-  plt.imshow(map_img, zorder=0, extent=[0, width, 0, height])
-  fig.savefig(save_path + '.png', bbox_inches='tight')
+    hmax.collections[0].set_alpha(0)
+    fig = hmax.get_figure()
+    plt.imshow(map_img, zorder=0, extent=[0, width, 0, height])
 
-
-
+    fig.savefig(save_path + '.png', bbox_inches='tight')
+    hmax = None
+    plt.clf()
+  except:
+    pass
 def create_beautiful_heatmap(data, background):
   example_img_path = background
   example_img = Image.open(example_img_path)
