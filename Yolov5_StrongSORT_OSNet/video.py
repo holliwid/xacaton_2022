@@ -103,8 +103,8 @@ class ReportTable(QTableWidget):
             warningButtons[i].resize(140, 25)
             warningButtons[i].move(220 + 125 * i, 3 + 30 * currentRow)
             k = 0
-            for current in elem[1:]:
-                print(current)
+            for lol in elem[1:]:
+
                 if k == 0:
                     current = 'Люди'
                 elif k == 1:
@@ -127,8 +127,9 @@ class ReportTable(QTableWidget):
 
                 if type(current) is int:
                     continue
-                imageButtons.append(ImageButton(self.parentWindow, str(current).strip()))
+                imageButtons.append(ImageButton(self.parentWindow, str(lol).strip()))
                 imageButtons[i].resize(150, 25)
+                imageButtons[i].setText(current)
                 imageButtons[i].move(110 + 160 * (i + 2), 3 + 30 * currentRow)
                 i += 1
         self.resizeColumnsToContents()
@@ -178,10 +179,15 @@ class WarningTable(QTableWidget):
             """).fetchall()
         imageButtons = []
         i = 0
+        kostil = len(warningList) / 2
         for elem in warningList:
+            if i == kostil:
+                break
+            print(elem)
             imageButtons.append(ImageButton(self, elem[4]))
             imageButtons[i].resize(140, 25)
-            imageButtons[i].move(650 + 125 * i, 25 * currentRow)
+            imageButtons[i].setText('Фото')
+            imageButtons[i].move(700 + 125 * i, 25 * currentRow)
             i += 1
         self.resizeColumnsToContents()
 
@@ -191,12 +197,14 @@ class WarningButton(QPushButton):
         super().__init__(parentWindow)
         self.parentWindow = parentWindow
         self.RepordID = ReportID
-        self.setText("Проишествия")
+        self.setText("Проиcшествия")
         self.clicked.connect(self.ShowWarningWindow)
         self.setStyleSheet(css.button_video)
 
     def ShowWarningWindow(self):
         self.window1 = WarningTable(self.RepordID)
+        self.window1.resize(900, 500)
+        self.window1.move(400, 400)
         self.window1.show()
 
 if __name__ == '__main__':
