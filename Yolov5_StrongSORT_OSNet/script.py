@@ -93,7 +93,7 @@ df_all = pd.concat([df_human, df_jacket, df_pants], ignore_index=True)
 df_all = df_all.sort_values(by=['frame_id'])
 
 
-df_human_valuable = df_human[df_human.groupby('object_id').object_id.transform('count')>150].copy()
+df_human_valuable = df_human[df_human.groupby('object_id').object_id.transform('count')>250].copy()
 df_jacket_valuable = df_jacket[df_jacket.groupby('object_id').object_id.transform('count')>1].copy()
 df_pants_valuable = df_pants[df_pants.groupby('object_id').object_id.transform('count')>1].copy()
 
