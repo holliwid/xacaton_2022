@@ -33,6 +33,7 @@ def heat_map(df, path_to_back_img, save_path, width=1920, height=1080):
   fig = hmax.get_figure()
   plt.imshow(map_img, zorder=0, extent=[0, width, 0, height])
   fig.savefig(save_path + '.png', bbox_inches='tight')
+  
 
 
 

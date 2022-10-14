@@ -141,7 +141,7 @@ for x in list_by_frame:
     humans_distance_jacket = []
     humans_distance_pants = []
     for y in x:
-        if y[7] == 1 and y[2] not in humans_on_frame:
+        if y[7] == 0 and y[2] not in humans_on_frame:
             humans_on_frame.append(y)
 
         if y[7] == 1 and y[2] not in jacket_object_id:
@@ -186,22 +186,18 @@ if len(df_human_valuable_track) !=  0:
         df_human_valuable_track.loc[(df_human_valuable_track.object_id == human_id) & (df_human_valuable_track.prediction > 0.70), 'pants_id'] = pants_id
 
 
-    df_without_pants_jacket = df_human_valuable_track.loc[
-        (df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull())]
-    without_pants_jacket = dict(df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (
-        df_human_valuable_track['pants_id'].isnull())].object_id.value_counts())
-    without_pants_jacket = list(without_pants_jacket.keys())
+    df_without_pants_jacket = df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull())]
+    df_without_pants = df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull() == False) & (df_human_valuable_track['pants_id'].isnull())]
+    df_without_jacket = df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull() == False)]
 
-    df_without_pants = df_human_valuable_track.loc[
-        (df_human_valuable_track['jacket_id'].isnull() == False) & (df_human_valuable_track['pants_id'].isnull())]
-    without_pants = dict(df_without_pants.loc[(df_without_pants['jacket_id'].isnull() == False) & (
-        df_without_pants['pants_id'].isnull())].object_id.value_counts())
+
+    without_pants_jacket = dict(df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull())].object_id.value_counts())
+    without_pants_jacket_1 = list(without_pants_jacket.keys())
+
+    without_pants = dict(df_without_pants.loc[(df_without_pants['jacket_id'].isnull() == False) & (df_without_pants['pants_id'].isnull())].object_id.value_counts())
     without_pants = list(without_pants.keys())
 
-    df_without_jacket = df_human_valuable_track.loc[
-        (df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull() == False)]
-    without_jacket = dict(df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (
-                df_human_valuable_track['pants_id'].isnull() == False)].object_id.value_counts())
+    without_jacket = dict(df_human_valuable_track.loc[(df_human_valuable_track['jacket_id'].isnull()) & (df_human_valuable_track['pants_id'].isnull() == False)].object_id.value_counts())
     without_jacket = list(without_jacket.keys())
 
     for human_id in without_pants_jacket:
