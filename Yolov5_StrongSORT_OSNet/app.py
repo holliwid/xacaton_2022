@@ -88,44 +88,9 @@ class QImageViewer(QMainWindow):
         currentCommand_script = "python script.py"
         t4 = subprocess.Popen(currentCommand_script)
         process.append(t4)
-        self.SendDataToDB()
 
-    def SendDataToDB(self):
-        db = sqlite3.connect("reports.db")
-        cursor = db.cursor()
-        lastExampleID = len(next(os.walk('runs/track'))[1])
-        Heat_Human_path = f"runs/track/example{lastExampleID}/Graphics/heat_human.png"
-        Heat_Without_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/heat_without_jacket.png"
-        Heat_Without_Pants_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/heat_without_pants_jacket.png"
-        Heat_Without_Pants_path = f"runs/track/example{lastExampleID}/Graphics/heat_without_pants.png"
-        Human_path = f"runs/track/example{lastExampleID}/Graphics/human.png"
-        Without_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/without_jacket.png"
-        Without_Pants_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/without_pants_jacket.png"
-        Without_Pants_path = f"runs/track/example{lastExampleID}/Graphics/without_pants.png"
-        Video_Path = f"data/video/{self.filename[0].split('/')[-1]}"
-        cursor.execute(f"""
-            insert into Reports(
-                Heat_Human_path,
-                Heat_Without_Jacket_path,
-                Heat_Without_Pants_Jacket_path,
-                Heat_Without_Pants_path,
-                Human_path,
-                Without_Jacket_path,
-                Without_Pants_Jacket_path,
-                Without_Pants_path,
-                Video_Path)
-            values(
-                '{Heat_Human_path}',
-                '{Heat_Without_Jacket_path}',
-                '{Heat_Without_Pants_Jacket_path}',
-                '{Heat_Without_Pants_path}',
-                '{Human_path}',
-                '{Without_Jacket_path}',
-                '{Without_Pants_Jacket_path}',
-                '{Without_Pants_path}',
-                '{Video_Path}');
-        """)
-        db.commit()
+
+
 
     @pyqtSlot()
     def OpenVideo(self):

@@ -81,8 +81,8 @@ mas = path_human.split('/')
 mas = "/".join(mas[:-3]) + '/'
 print(mas)
 os.mkdir(mas + '/' + 'Graphics')
-cv2.imwrite(mas + "background.jpg", frame1)
-im = Image.open(mas + "background.jpg")
+cv2.imwrite(mas + "background.png", frame1)
+im = Image.open(mas + "background.png")
 (width, height) = im.size
 
 
@@ -213,17 +213,71 @@ for x in df_res_frame:
     cv2.imwrite(warning_path + "/frame%d.jpg" % x[0], frame)
 
 
-creat_graphics.create_scatter(df_human_valuable_track, mas + "background.jpg", mas + 'Graphics/human', width, height)
-creat_graphics.create_scatter(df_without_jacket, mas + "background.jpg", mas + 'Graphics/without_jacket', width, height)
-creat_graphics.create_scatter(df_without_pants_jacket, mas + "background.jpg", mas + 'Graphics/without_pants_jacket', width, height)
-creat_graphics.create_scatter(df_without_pants, mas + "background.jpg", mas + 'Graphics/without_pants', width, height)
+creat_graphics.create_scatter(df_human_valuable_track, mas + "background.png", mas + 'Graphics/human', width, height)
+creat_graphics.create_scatter(df_without_jacket, mas + "background.png", mas + 'Graphics/without_jacket', width, height)
+creat_graphics.create_scatter(df_without_pants_jacket, mas + "background.png", mas + 'Graphics/without_pants_jacket', width, height)
+creat_graphics.create_scatter(df_without_pants, mas + "background.png", mas + 'Graphics/without_pants', width, height)
 
 
-creat_graphics.heat_map(df_human_valuable_track, mas + "background.jpg", mas + 'Graphics/heat_human', width, height)
-creat_graphics.heat_map(df_without_jacket, mas + "background.jpg", mas + 'Graphics/heat_without_jacket', width, height)
-creat_graphics.heat_map(df_without_pants_jacket, mas + "background.jpg", mas + 'Graphics/heat_without_pants_jacket', width, height)
-creat_graphics.heat_map(df_without_pants, mas + "background.jpg", mas + 'Graphics/heat_without_pants', width, height)
+creat_graphics.heat_map(df_human_valuable_track, mas + "background.png", mas + 'Graphics/heat_human', width, height)
+creat_graphics.heat_map(df_without_jacket, mas + "background.png", mas + 'Graphics/heat_without_jacket', width, height)
+creat_graphics.heat_map(df_without_pants_jacket, mas + "background.png", mas + 'Graphics/heat_without_pants_jacket', width, height)
+creat_graphics.heat_map(df_without_pants, mas + "background.png", mas + 'Graphics/heat_without_pants', width, height)
 
 
 df_human_valuable_list = df_human_valuable[['box_left', 'box_top']].values.tolist()
 creat_graphics.create_beautiful_heatmap(df_human_valuable_list, './assets/Test.png')
+
+
+
+db = sqlite3.connect("reports.db")
+cursor = db.cursor()
+lastExampleID = len(next(os.walk('runs/track'))[1])
+Heat_Human_path = f"runs/track/example{lastExampleID}/Graphics/heat_human.png"
+Heat_Without_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/heat_without_jacket.png"
+Heat_Without_Pants_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/heat_without_pants_jacket.png"
+Heat_Without_Pants_path = f"runs/track/example{lastExampleID}/Graphics/heat_without_pants.png"
+Human_path = f"runs/track/example{lastExampleID}/Graphics/human.png"
+Without_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/without_jacket.png"
+Without_Pants_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/without_pants_jacket.png"
+Without_Pants_path = f"runs/track/example{lastExampleID}/Graphics/without_pants.png"
+Video_Path = f"data/video/{self.filename[0].split('/')[-1]}"
+cursor.execute(f"""
+    insert into Reports(
+        Heat_Human_path,
+        Heat_Without_Jacket_path,
+        Heat_Without_Pants_Jacket_path,
+        Heat_Without_Pants_path,
+        Human_path,
+        Without_Jacket_path,
+        Without_Pants_Jacket_path,
+        Without_Pants_path,
+        Video_Path)
+    values(
+        '{Heat_Human_path}',
+        '{Heat_Without_Jacket_path}',
+        '{Heat_Without_Pants_Jacket_path}',
+        '{Heat_Without_Pants_path}',
+        '{Human_path}',
+        '{Without_Jacket_path}',
+        '{Without_Pants_Jacket_path}',
+        '{Without_Pants_path}',
+        '{Video_Path}');
+""")
+db.commit()
+cursor.execute(f"""
+    insert into Warnings(
+        Report_ID,
+        Event_ID,
+        Object_ID,
+        Frame_path
+    )
+    values(
+        {},
+        {},
+        {df_res_frame[1]},
+        {df_res_frame[0]}
+    );
+"""
+               )
+db.commit()
