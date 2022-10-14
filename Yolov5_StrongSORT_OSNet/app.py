@@ -21,7 +21,6 @@ class QImageViewer(QMainWindow):
 
         self.width = int(self.frameGeometry().width())
         self.height = int(self.frameGeometry().height())
-        print(self.width)
 
         self.CreateUI()
 

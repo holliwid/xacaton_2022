@@ -4,16 +4,29 @@ from PyQt5.QtCore import *
 import os
 import sqlite3
 import sys
+import css 
+
+
+
+button_width = 250
+button_height = 70
 
 #Базовое окно с происшествиями
 class VideoForm(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.resize(1300, 800)
+        self.w = None
+        self.resize(1900, 800)
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+        self.setWindowTitle("Детектор")
+
+        self.width = int(self.frameGeometry().width())
+        self.height = int(self.frameGeometry().height())
+
+
         self.tb = ReportTable(self)
         self.setWindowTitle("Детектор")
 
@@ -38,6 +51,8 @@ class ImageButton(QPushButton):
         self.ImagePath = imagePath
         self.setText(imagePath.split('\\')[-1])
         self.clicked.connect(self.ShowImage)
+        self.setStyleSheet(css.button_video)
+
     def ShowImage(self):
         self.window1 = ImageForm(self.ImagePath)
         self.window1.show()
@@ -48,6 +63,7 @@ class ReportTable(QTableWidget):
         self.parentWindow = parentWindow
         super().__init__(parentWindow)
         self.setGeometry(10, 10, 200, 300)
+        self.setRowHeight(100, 100) 
         self.setRowCount(0)
         self.setColumnCount(1)
         self.verticalHeader()
@@ -84,14 +100,36 @@ class ReportTable(QTableWidget):
         for elem in imagePathList:
             i = 0
             warningButtons.append(WarningButton(self.parentWindow, currentID))
-            warningButtons[i].resize(100, 25)
-            warningButtons[i].move(220 + 105 * i, 10 + 30 * currentRow)
-            for current in elem:
+            warningButtons[i].resize(140, 25)
+            warningButtons[i].move(220 + 125 * i, 3 + 30 * currentRow)
+            k = 0
+            for current in elem[1:]:
+                print(current)
+                if k == 0:
+                    current = 'Люди'
+                elif k == 1:
+                    current = 'Без жакета'
+                elif k == 2:
+                    current = 'Без куртки и штанов'
+                elif k == 3:
+                    current = 'Без штанов'
+                elif k == 4:
+                    current = 'Люди'
+                elif k == 5:
+                    current = 'Без жакета'
+                elif k == 6:
+                    current = 'Без куртки и штанов'
+                elif k == 7:
+                    current = 'Без штанов'
+                elif k == 8:
+                    current = 'Видео'
+                k += 1
+
                 if type(current) is int:
                     continue
                 imageButtons.append(ImageButton(self.parentWindow, str(current).strip()))
-                imageButtons[i].resize(100, 25)
-                imageButtons[i].move(110 + 105 * (i + 2), 10 + 30 * currentRow)
+                imageButtons[i].resize(150, 25)
+                imageButtons[i].move(110 + 160 * (i + 2), 3 + 30 * currentRow)
                 i += 1
         self.resizeColumnsToContents()
 
@@ -100,7 +138,8 @@ class WarningTable(QTableWidget):
     def __init__(self, reportID):
         super().__init__()
         self.reportID = reportID
-        self.setGeometry(10, 10, 200, 300)
+        self.setGeometry(10, 10, 800, 500)
+
         self.setRowCount(0)
         self.setColumnCount(4)
         self.verticalHeader()
@@ -141,8 +180,8 @@ class WarningTable(QTableWidget):
         i = 0
         for elem in warningList:
             imageButtons.append(ImageButton(self, elem[4]))
-            imageButtons[i].resize(100, 25)
-            imageButtons[i].move(550 + 105 * i, 30 * currentRow)
+            imageButtons[i].resize(140, 25)
+            imageButtons[i].move(650 + 125 * i, 25 * currentRow)
             i += 1
         self.resizeColumnsToContents()
 
@@ -152,8 +191,10 @@ class WarningButton(QPushButton):
         super().__init__(parentWindow)
         self.parentWindow = parentWindow
         self.RepordID = ReportID
-        self.setText("Show warnings")
+        self.setText("Проишествия")
         self.clicked.connect(self.ShowWarningWindow)
+        self.setStyleSheet(css.button_video)
+
     def ShowWarningWindow(self):
         self.window1 = WarningTable(self.RepordID)
         self.window1.show()
