@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import creat_graphics
 from heatmappy import Heatmapper
+import sqlite3
 
 
 from PIL import Image
