@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import creat_graphics
 from heatmappy import Heatmapper
-
+import sqlite3
 
 from PIL import Image
 
@@ -221,7 +221,7 @@ if len(df_human_valuable_track) !=  0:
 for x in df_res_frame_without_pants_jacket:
     vidcap.set(cv2.CAP_PROP_POS_FRAMES, x[0])
     res, frame = vidcap.read()
-    cv2.imwrite(warning_path + "/frame%d.jpg" % x[0], frame)
+    cv2.imwrite(warning_path + "/frame%d.png" % x[0], frame)
 
 
 creat_graphics.create_scatter(df_human_valuable_track, mas + "background.png", mas + 'Graphics/human', width, height)
@@ -252,7 +252,8 @@ Human_path = f"runs/track/example{lastExampleID}/Graphics/human.png"
 Without_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/without_jacket.png"
 Without_Pants_Jacket_path = f"runs/track/example{lastExampleID}/Graphics/without_pants_jacket.png"
 Without_Pants_path = f"runs/track/example{lastExampleID}/Graphics/without_pants.png"
-Video_Path = f"data/video/{self.filename[0].split('/')[-1]}"
+Video_Path = f"data/video/{video_path.split('/')[-1]}"
+print(Video_Path)
 cursor.execute(f"""
     insert into Reports(
         Heat_Human_path,
@@ -277,14 +278,16 @@ cursor.execute(f"""
 """)
 db.commit()
 
-report_id = cursor.execute(f"select ID from Reports ORDER BY id DESC LIMIT 1;")
-
+report_id = cursor.execute(f"select ID from Reports ORDER BY ID DESC LIMIT 1;").fetchall()[0][0]
 # (1, "Человек без рабочей куртки и штанов");
 # (2, "Человек без рабочих штанов");
 # (3, "Человек без рабочей куртки");
 # (4, "Человек в опасной зоне");
+print(report_id)
 
 for warning in df_res_frame_without_pants_jacket:
+    print(warning[1])
+    print(warning[0])
     cursor.execute(f"""
         insert into Warnings(
             Report_ID,
@@ -294,12 +297,11 @@ for warning in df_res_frame_without_pants_jacket:
         )
         values(
             {report_id},
-            {1},
-            {warning[1]},
-            {warning[0]}
+            1,
+            {int(warning[1])},
+            '{warning_path + "/frame" + str(int(warning[0])) + ".png"}'
         );
-    """
-                )
+    """)
     db.commit()
 
 
@@ -313,12 +315,11 @@ for warning in df_res_frame_without_pants:
         )
         values(
             {report_id},
-            {1},
-            {warning[1]},
-            {warning[0]}
+            2,
+            {int(warning[1])},
+            '{warning_path + "/frame" + str(int(warning[0])) + ".png"}'
         );
-    """
-                )
+    """)
     db.commit()
 
 
@@ -332,10 +333,9 @@ for warning in df_res_frame_without_jacket:
         )
         values(
             {report_id},
-            {1},
-            {warning[1]},
-            {warning[0]}
+            3,
+            {int(warning[1])},
+            '{warning_path + "/frame" + str(int(warning[0])) + ".png"}'
         );
-    """
-                )
+    """)
     db.commit()

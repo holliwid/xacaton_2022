@@ -135,7 +135,7 @@ class WarningTable(QTableWidget):
     def CreateWarningButtons(self, currentID, currentRow):
         warningList = self.cursor.execute(f"""
             select * from Warnings
-                where ID = {currentID}
+                where Report_ID = {currentID}
             """).fetchall()
         imageButtons = []
         i = 0
