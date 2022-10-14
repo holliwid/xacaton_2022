@@ -117,7 +117,7 @@ class WarningTable(QTableWidget):
 
     def CreateReportList(self):
         reportList = self.cursor.execute(f"""
-            select Warnings.Object_ID, Events.Description, Warnings.Frame_Path from Reports
+            select Warnings.Report_ID, Warnings.Object_ID, Events.Description, Warnings.Frame_Path from Reports
                 left join Warnings on Warnings.Report_ID = Reports.ID
                 left join Events on Warnings.Event_ID = Events.ID
             where Warnings.Report_ID = {self.reportID}
@@ -142,7 +142,7 @@ class WarningTable(QTableWidget):
         for elem in warningList:
             imageButtons.append(ImageButton(self, elem[4]))
             imageButtons[i].resize(100, 25)
-            imageButtons[i].move(450 + 105 * i, 30 * currentRow)
+            imageButtons[i].move(550 + 105 * i, 30 * currentRow)
             i += 1
         self.resizeColumnsToContents()
 
