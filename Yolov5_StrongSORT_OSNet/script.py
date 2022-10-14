@@ -173,7 +173,9 @@ for x in list_by_frame:
 
 df_human_valuable_track = df_human_valuable.copy()
 
-df_res_frame = []
+df_res_frame_without_pants_jacket = []
+df_res_frame_without_pants = []
+df_res_frame_without_jacket = []
 df_without_jacket = df_jacket_valuable.copy()
 df_without_pants_jacket = df_without_jacket.copy()
 df_without_pants = df_pants.copy()
@@ -202,12 +204,21 @@ if len(df_human_valuable_track) !=  0:
 
     for human_id in without_pants_jacket:
         k = df_without_pants_jacket.loc[df_without_pants_jacket.object_id == human_id].iloc[0]
-        df_res_frame.append([k.frame_id, k.object_id])
+        df_res_frame_without_pants_jacket.append([k.frame_id, k.object_id])
+
+
+    for human_id in without_pants:
+        k = df_without_pants.loc[df_without_pants.object_id == human_id].iloc[0]
+        df_res_frame_without_pants.append([k.frame_id, k.object_id])
+
+
+    for human_id in without_jacket:
+        k = df_without_jacket.loc[df_without_jacket.object_id == human_id].iloc[0]
+        df_res_frame_without_jacket.append([k.frame_id, k.object_id])
 
 
 
-
-for x in df_res_frame:
+for x in df_res_frame_without_pants_jacket:
     vidcap.set(cv2.CAP_PROP_POS_FRAMES, x[0])
     res, frame = vidcap.read()
     cv2.imwrite(warning_path + "/frame%d.jpg" % x[0], frame)
@@ -265,19 +276,66 @@ cursor.execute(f"""
         '{Video_Path}');
 """)
 db.commit()
-cursor.execute(f"""
-    insert into Warnings(
-        Report_ID,
-        Event_ID,
-        Object_ID,
-        Frame_path
-    )
-    values(
-        {},
-        {},
-        {df_res_frame[1]},
-        {df_res_frame[0]}
-    );
-"""
-               )
-db.commit()
+
+report_id = cursor.execute(f"select ID from Reports ORDER BY id DESC LIMIT 1;")
+
+# (1, "Человек без рабочей куртки и штанов");
+# (2, "Человек без рабочих штанов");
+# (3, "Человек без рабочей куртки");
+# (4, "Человек в опасной зоне");
+
+for warning in df_res_frame_without_pants_jacket:
+    cursor.execute(f"""
+        insert into Warnings(
+            Report_ID,
+            Event_ID,
+            Object_ID,
+            Frame_path
+        )
+        values(
+            {report_id},
+            {1},
+            {warning[1]},
+            {warning[0]}
+        );
+    """
+                )
+    db.commit()
+
+
+for warning in df_res_frame_without_pants:
+    cursor.execute(f"""
+        insert into Warnings(
+            Report_ID,
+            Event_ID,
+            Object_ID,
+            Frame_path
+        )
+        values(
+            {report_id},
+            {1},
+            {warning[1]},
+            {warning[0]}
+        );
+    """
+                )
+    db.commit()
+
+
+for warning in df_res_frame_without_jacket:
+    cursor.execute(f"""
+        insert into Warnings(
+            Report_ID,
+            Event_ID,
+            Object_ID,
+            Frame_path
+        )
+        values(
+            {report_id},
+            {1},
+            {warning[1]},
+            {warning[0]}
+        );
+    """
+                )
+    db.commit()
