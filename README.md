@@ -1,5 +1,18 @@
 # xacaton_2022
-## Установка 
+## :notebook_with_decorative_cover: Описание проекта
+Нейронная сеть, способная распознавать людей с рабочими куртками и штанами на них на предприятии.
+<...>
+## :scroll: Стек
+```
+Python
+SQLite3
+PyQt
+YoLov5m
+Deep Sort
+<...>
+```
+## :floppy_disk: Установка
+<...>
 
 pip install -r requirement_1.txt
 
