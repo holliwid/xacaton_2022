@@ -31,7 +31,9 @@ Deep Sort - для трекинга
 База данных находится в папке вместе со всеми файлами и называется reports.db.
 
 ### Установка библиотек для питона
-pip install -r requirement_1.txt
+```
+pip install -r requirement.txt
+```
 
 запуск приложения через запуск app.py
 
