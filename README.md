@@ -15,7 +15,9 @@
 -люди без куртки
 
 -люди без штанов и куртки
+
 ![Alt text](./Readme_sourse/heat_human.png?raw=true "Heat human")
+![Alt text](./Readme_sourse/human_scatter.jpg?raw=true "Heat human")
 
 ## :scroll: Стек
 ```
@@ -26,7 +28,7 @@ YoLov5m - для детекции
 Deep Sort - для трекинга
 ```
 ## :floppy_disk: Установка
-База данных находится в папке вмесе со всеми файлами и называется reports.db.
+База данных находится в папке вместе со всеми файлами и называется reports.db.
 
 ### Установка библиотек для питона
 pip install -r requirement_1.txt
